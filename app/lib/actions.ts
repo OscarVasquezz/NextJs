@@ -28,12 +28,17 @@ export async function createInvoice(formData: FormData) {//const rawFormData = {
 	const amountInCents = amount * 100;//12.4.3
 	const date = new Date().toISOString().split('T')[0];//12.4.4
 	
-	//in insesion a postgresql 12.5
-	await sql`
-	  INSERT INTO invoices (customer_id, amount, status, date)
-	  VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-	`;
-	//fin insesion a postgresql 12.5
+	try {//13.1.1
+		//in insesion a postgresql 12.5
+		await sql`
+		  INSERT INTO invoices (customer_id, amount, status, date)
+		  VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
+		`;
+		//fin insesion a postgresql 12.5		
+	}catch(error){//13.1.1
+		console.error(error);//13.1.1
+		return{message: 'Database Error: Failed to Create Invoice.',};	//13.1.1	
+	}//13.1.1
 	
 	revalidatePath('/dashboard/invoices');//12.6.0.1
 	redirect('/dashboard/invoices');//12.6.0.2
@@ -47,18 +52,25 @@ export async function updateInvoice(id: string, formData: FormData) {
   });
  
   const amountInCents = amount * 100;
- 
-  await sql`
-    UPDATE invoices
-    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-    WHERE id = ${id}
-  `;
+ try{//13.1.2
+	await sql`
+	  UPDATE invoices
+	  SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
+	  WHERE id = ${id}
+	`;
+ }catch(error){//13.1.2
+	console.error(error);//13.1.2
+	return { message: 'Database Error: Failed to Update Invoice.' };//13.1.2
+ }//13.1.2
+
  
   revalidatePath('/dashboard/invoices');
   redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
+  throw new Error('Failed to Delete Invoice');//13.1.3
+	
   await sql`DELETE FROM invoices WHERE id = ${id}`;
   revalidatePath('/dashboard/invoices');
 }
