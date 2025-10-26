@@ -47,7 +47,7 @@ export default async function InvoicesTable({
                     <p>{formatDateToLocal(invoice.date)}</p>
                   </div>
                   <div className="flex justify-end gap-2">
-                    <UpdateInvoice id={invoice.id} />
+                    <UpdateInvoice id={invoice.id} />{/*12.6.1.1*/}
                     <DeleteInvoice id={invoice.id} />
                   </div>
                 </div>
